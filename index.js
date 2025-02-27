@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const multer = require("multer");
 const session = require("express-session");
+const userRouter = require("./router/UsersRouter");
 
 const app = express();
 
@@ -49,9 +50,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
 // مسار اختبار بسيط
-app.get("/", (req, res) => {
-  res.send("Hello from Vercel - Test Route");
-});
+app.use("/", userRouter);
 
 // التقاط الأخطاء العامة
 app.use((err, req, res, next) => {
