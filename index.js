@@ -4,7 +4,6 @@ const path = require("path");
 const multer = require("multer");
 const session = require("express-session");
 const userRouter = require("./router/UsersRouter");
-
 const app = express();
 
 // إعداد التسجيل للأخطاء
@@ -50,8 +49,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
 // مسار اختبار بسيط
+app.get("/", (req, res) => {
+  res.render("login");
+});
 app.use("/", userRouter);
-
 // التقاط الأخطاء العامة
 app.use((err, req, res, next) => {
   console.error("Error occurred:", err.stack);
