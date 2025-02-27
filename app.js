@@ -5,7 +5,7 @@ const multer = require("multer");
 const session = require("express-session");
 const http = require("http");
 const { initSocket } = require("./socket");
-const cron = require('node-cron');
+const cron = require("node-cron");
 const NotificationModel = require("./models/NotificationModel");
 const forumRouter = require("./router/forumRoutes");
 const userRouter = require("./router/UsersRouter");
@@ -105,16 +105,20 @@ app.use("/admin", adminJobProjectSettingsRoutes);
 app.use("/", require("./router/GlobalRoleRouter")); // راوتر إضافي
 
 // مسارات ثابتة للصفحات
-app.get('/about', (req, res) => res.render('about', { 
-  unreadCount: res.locals.unreadCount,
-  userId: res.locals.userId,
-  isAdmin: res.locals.isAdmin 
-}));
-app.get('/privacy', (req, res) => res.render('privacy', { 
-  unreadCount: res.locals.unreadCount,
-  userId: res.locals.userId,
-  isAdmin: res.locals.isAdmin 
-}));
+app.get('/about', (req, res) =>
+  res.render("about", { 
+    unreadCount: res.locals.unreadCount,
+    userId: res.locals.userId,
+    isAdmin: res.locals.isAdmin 
+  })
+);
+app.get('/privacy', (req, res) =>
+  res.render("privacy", { 
+    unreadCount: res.locals.unreadCount,
+    userId: res.locals.userId,
+    isAdmin: res.locals.isAdmin 
+  })
+);
 
 // مسار مستقل لـ /ProjectSpace
 app.get("/ProjectSpace", (req, res) => {
@@ -123,7 +127,7 @@ app.get("/ProjectSpace", (req, res) => {
     successMessage: null,
     userId: res.locals.userId,
     isAdmin: res.locals.isAdmin,
-    unreadCount: res.locals.unreadCount
+    unreadCount: res.locals.unreadCount,
   });
 });
 
@@ -131,21 +135,29 @@ app.get("/ProjectSpace", (req, res) => {
 initSocket(server);
 
 // جدولة حذف الإعلانات القديمة
-cron.schedule('0 0 * * *', async () => {
-  try {
-    await forumModel.deleteOldAds();
-    console.log('Scheduled deletion of old ads completed.');
-  } catch (err) {
-    console.error('Error in scheduled deletion:', err);
+cron.schedule(
+  "0 0 * * *",
+  async () => {
+    try {
+      await forumModel.deleteOldAds();
+      console.log("Scheduled deletion of old ads completed.");
+    } catch (err) {
+      console.error("Error in scheduled deletion:", err);
+    }
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Riyadh",
   }
-}, {
-  scheduled: true,
-  timezone: "Asia/Riyadh"
-});
+);
 
-// بدء الخادم
+// بدء الخادم للتشغيل المحلي فقط
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
+if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+  // في بيئة Vercel أو الإنتاج، لا نقوم بنداء server.listen
+  module.exports = app;
+} else {
+  server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
-  
+}
