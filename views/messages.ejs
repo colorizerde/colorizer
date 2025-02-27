@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/messages.css" />
+  <title>الرسائل الواردة</title>
+</head>
+<body>
+  <header>
+    <%- include('partials/headerhome') %>
+    <%- include('partials/headeraction') %>
+  </header>
+
+  <div class="container">
+    <text class="text">
+      <p>الرسائل الواردة</p>
+      <form action="/messages/delete-all" method="POST" class="delete-all-form">
+        <button type="submit" class="delete-all-btn">
+          <i class="fas fa-trash"></i> حذف الكل
+        </button>
+      </form>
+    </text>
+
+    <ul class="notification-list">
+      <% if (messages.length === 0) { %>
+        <p class="no-notifications" style="text-align: center; color: darkcyan">
+          لا توجد رسائل لعرضها
+        </p>
+      <% } else { %>
+        <% messages.forEach((message) => { %>
+          <li onclick="window.location.href='/chat/<%= message.sender_id %>'">
+            <div class="notification-content">
+              <img
+                src="<%= message.sender_avatar.includes('/uploads/avatars/') ? message.sender_avatar : '/uploads/avatars/' + (message.sender_avatar || 'default-avatar.png') %>"
+                class="avatar"
+                alt="<%= message.sender_name || 'User' %>"
+                onerror="this.src='/uploads/images/pngwing.com.png'"
+              />
+              <div class="notification-text">
+                <strong><%= message.sender_name %></strong>
+                <p><%= message.content %></p>
+                <span class="created-at"><%= new Date(message.created_at).toLocaleString('ar-EG', { hour12: true }) %></span>
+              </div>
+            </div>
+            <div class="notification-actions">
+              <form action="/messages/delete/<%= message.id %>" method="POST" class="delete-form">
+                <button type="submit" class="delete-btn">
+                  <i class="fas fa-trash"></i> حذف
+                </button>
+              </form>
+            </div>
+          </li>
+        <% }) %>
+      <% } %>
+    </ul>
+  </div>
+
+
+  <script>
+    const userId = "<%= userId %>";
+    const currentUserAvatar = "<%= currentUserAvatar %>";
+  </script>
+</body>
+<footer style="margin-top: 60vh">
+  <%- include('partials/footer') %>
+</footer>
+
+</html>

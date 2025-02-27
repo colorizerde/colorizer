@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تعديل المنشور</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      direction: rtl;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 60%;
+      margin: auto;
+    }
+
+    div {
+      margin-bottom: 15px;
+      text-align: right;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin-top: 5px;
+    }
+
+    img {
+      display: block;
+      margin-top: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h2>تعديل المنشور</h2>
+  <form action="/forum/post/<%= post.id %>/edit" method="POST" enctype="multipart/form-data">
+    <div>
+      <label for="content">محتوى المنشور</label>
+      <textarea name="content" id="content" rows="4" cols="50"><%= post.content %></textarea>
+    </div>
+
+    <% for (let i = 1; i <= 4; i++) { %>
+      <div>
+        <label for="postImages<%= i %>">الصورة <%= i %></label>
+        <input type="file" name="postImages" id="postImages<%= i %>" accept="image/*" />
+        <% if (post['image' + i]) { %>
+          <img src="/uploads/images/<%= post['image' + i] %>" alt="Image <%= i %>" width="100" />
+        <% } %>
+      </div>
+    <% } %>
+
+    <button type="submit">تحديث المنشور</button>
+  </form>
+</body>
+</html>

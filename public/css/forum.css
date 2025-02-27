@@ -1,0 +1,573 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: ltr;
+}
+
+/* تخصيص شكل شريط التمرير لجميع العناصر */
+::-webkit-scrollbar {
+  width: 4px; /* عرض شريط التمرير */
+  height: 4px; /* ارتفاع شريط التمرير */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* خلفية شريط التمرير شفافة */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6c5ce7; /* لون النقطة */
+  border-radius: 50%; /* شكل دائري صغير */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0056b3; /* لون النقطة عند التمرير */
+}
+
+/* دعم متصفحات Firefox */
+* {
+  scrollbar-width: thin; /* عرض شريط التمرير */
+  scrollbar-color: #6c5ce7 transparent; /* لون النقطة مع خلفية شفافة */
+}/* إخفاء شريط التمرير في جميع المتصفحات */
+::-webkit-scrollbar {
+  width: 0; /* إخفاء العرض */
+  height: 0; /* إخفاء الارتفاع */
+  background: transparent; /* خلفية شفافة */
+}
+
+/* إخفاء شريط التمرير في Firefox */
+* {
+  scrollbar-width: none; /* إخفاء شريط التمرير */
+}
+
+/* إخفاء شريط التمرير في Internet Explorer و Edge */
+body {
+  -ms-overflow-style: none; /* إخفاء شريط التمرير */
+}
+body {
+  background-color: #f9fbfc;
+  color: #333;
+  line-height: 1.6;
+  font-size: 0.875rem;
+}
+
+.all {
+  display: flex;
+  justify-content: space-between;
+  padding: 2%;
+  gap: 2%;
+}
+.left,
+    .right {
+      width: 25%;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .left:hover,
+    .right:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .center {
+      width: 50%;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+.text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6c5ce7;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  text-transform: capitalize;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.share {
+  background-color: #fff;
+  border-radius: 50px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  max-width: 600px;
+  margin: auto;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+.row img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.row img:hover {
+  transform: scale(1.1);
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 20px;
+  border: 1px solid #666;
+  outline: none;
+  text-align: center;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hidden-form {
+  display: none;
+  flex-direction: column;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.hidden-form.active {
+  display: flex;
+  opacity: 1;
+  border-bottom: 50%;
+}
+
+#image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#image-preview img {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+#image-preview img:hover {
+  transform: scale(1.05);
+}
+
+#image-preview .remove-image {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: 12px 20px;
+  background-color: #6c5ce7;
+  color: white;
+  width: 120px;
+  margin: 0 auto;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.file-input-label:hover {
+  background-color: #0056b3;
+}
+
+.share-btn {
+  align-self: flex-end;
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn {
+  align-self: center;
+  background-color: #963131;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.hidden-post-form .share-btn:disabled {
+  background-color: #ccc;
+}
+
+.hidden-post-form .share-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+.left {
+  overflow-y: auto; /* تفعيل التمرير العمودي */
+}
+
+.left::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left::-webkit-scrollbar-thumb {
+  background: #6c5ce7;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.left::-webkit-scrollbar-thumb:hover {
+  background: #0056b3;
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.left {
+  scrollbar-width: thin;
+  scrollbar-color: #6c5ce7 transparent;
+}
+.post {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 8px;
+  padding: 10px;
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.person .post-user-info {
+  font-size: 1em;
+  color: #6c5ce7;
+}
+
+.person .post-time {
+  color: #666;
+  font-size: 9px;
+}
+
+.post-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+}
+
+.post-actions button {
+  margin-bottom: 60px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6c5ce7;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn i {
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.post-avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.post-user-info {
+  flex: 1;
+  margin-left: 10px;
+  text-align: left;
+}
+
+.post-content {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.post-image {
+  max-width: 350px;
+  min-height: 350px;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.post-image:hover {
+  transform: scale(1.05);
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-top: 1px solid #ddd;
+  margin-top: 4%;
+}
+
+.post-footer button {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8px;
+  border: none;
+  background: none;
+  color: #6c5ce7;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.post-footer button:hover {
+  transform: scale(1.1);
+}
+
+.post-footer button i {
+  font-size: 1.2em;
+  pointer-events: none;
+}
+
+.like-count {
+  font-weight: bold;
+  color: #333;
+}
+
+.count {
+  font-weight: bold;
+  color: #333;
+}
+
+.post-footer .show-comments-btn span {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* تعديل تصميم الفورم المخفي */
+.comment-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 30px;
+  padding: 8px 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rowcomment {
+  display: flex;
+  flex-direction: row;
+}
+
+.rowcomment input {
+  width: 80%;
+}
+
+.rowcomment button {
+  width: 20%;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 4px;
+  font-size: 0.875rem;
+  border: 1px solid #ddd;
+  border-radius: 30px 0px 0px 30px;
+  outline: none;
+  box-shadow: none;
+}
+
+.comment-form button {
+  background-color: #6c5ce7;
+  color: white;
+  width: 20%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 0px 30px 30px 0px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.comment-form button:hover {
+  background-color: #0056b3;
+}
+
+/* تصميم قائمة التعليقات */
+.comments-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 15px;
+}
+
+.comments-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comments-list::-webkit-scrollbar-thumb {
+  background: #6c5ce7;
+  border-radius: 4px;
+}
+
+.comment {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+  padding: 10px;
+  background: #f9fbfc;
+}
+
+.comment img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comment p {
+  font-size: 14px;
+  color: #333;
+  flex: 1;
+}
+
+/* تحسين الشكل العام */
+.comment-form,
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    background-color: #f9fbfc;
+    color: #333;
+    line-height: 1.6;
+    font-size: 0.775rem;
+  }
+  .comments-section {
+    width: 100%;
+  }
+  .comment-form,
+  .comments-list {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .left,
+  .right {
+    display: none;
+  }
+  .center {
+    width: 100%;
+  }
+}
+
+/* تنسيق قائمة التنقل للجوال */
+.mobile-nav {
+  display: none; /* إخفاء القائمة في الوضع الافتراضي */
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 100;
+}
+
+/* تنسيق العناصر داخل القائمة */
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #7a7a7a;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.nav-item i {
+  font-size: 1.555rem;
+  margin-bottom: 5px;
+}
+
+/* تأثير التمرير */
+.nav-item:hover {
+  color: #6c5ce7;
+}
+
+/* إظهار القائمة في شاشات الجوال والتابلت */
+@media (max-width: 768px) {
+  .mobile-nav {
+    display: flex;
+  }
+}
+
+/* إخفاء القائمة في شاشات الحاسوب */
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none;
+  }
+}

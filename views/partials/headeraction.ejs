@@ -1,0 +1,142 @@
+<link rel="stylesheet" href="/css/headeraction.min.css" media="print" onload="this.media='all'" />
+<div class="header" role="navigation" aria-label="شريط التنقل العلوي">
+  <nav id="colorNav">
+    <ul>
+      <li>
+        <a href="#" class="dropdown-toggle fa fa-cog" aria-label="خيارات المستخدم" aria-expanded="false" aria-controls="dropdown-menu"></a>
+        <ul class="dropdown-menu" role="menu" id="dropdown-menu">
+          <% if (locals.isAdmin) { %>
+            <li><a href="/admin/dashboard" aria-label="التحكم"><i class="fas fa-user-shield" aria-hidden="true"></i> التحكم</a></li>
+          <% } %>
+          <li>
+            <form action="/logout" method="POST" id="logout-form">
+              <button type="submit" style="background: none; border: none; padding: 0; width: 100%; text-align: right;" aria-label="تسجيل الخروج">
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i> تسجيل الخروج
+              </button>
+            </form>
+          </li>
+          <li><a href="/change-password" aria-label="تغيير كلمة المرور"><i class="fas fa-lock" aria-hidden="true"></i> تغيير كلمة المرور</a></li>
+          <li><a href="/updateProfile" aria-label="تعديل الملف الشخصي"><i class="fas fa-user-edit" aria-hidden="true"></i> تعديل الملف الشخصي</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <a href="/friends" aria-label="الأصدقاء"><i class="fas fa-users"></i></a>
+  <a href="/profile" aria-label="الملف الشخصي"><i class="fas fa-user"></i></a>
+  <a href="/notifications" class="notification-icon" id="notifications-icon" aria-label="الإشعارات">
+    <i class="fas fa-bell"></i>
+    <% if (locals.unreadCount > 0) { %>
+      <span class="notification-count" id="unread-notifications-count"><%= locals.unreadCount %></span>
+    <% } else { %>
+      <span class="notification-count" id="unread-notifications-count" style="display: none;">0</span>
+    <% } %>
+  </a>
+  <a href="/messages" class="notification-icon" id="messages-icon" aria-label="الرسائل">
+    <i class="fas fa-message"></i>
+    <% if (locals.unreadMessagesCount > 0) { %>
+      <span class="notification-count" id="unread-messages-count"><%= locals.unreadMessagesCount %></span>
+    <% } else { %>
+      <span class="notification-count" id="unread-messages-count" style="display: none;">0</span>
+    <% } %>
+  </a>
+  <a href="/forum" aria-label="المنتدى"><i class="fas fa-home"></i></a>
+</div>
+
+<script src="/socket.io/socket.io.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const socket = io();
+    const userId = "<%= locals.userId || '' %>";
+    const notificationsIcon = document.getElementById('notifications-icon');
+    const messagesIcon = document.getElementById('messages-icon');
+    const unreadNotificationsCount = document.getElementById('unread-notifications-count');
+    const unreadMessagesCount = document.getElementById('unread-messages-count');
+
+    if (userId) {
+      socket.emit("join", userId);
+    }
+
+    fetch('/chat/unread-count', {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          const initialCount = data.unreadMessagesCount || 0;
+          unreadMessagesCount.textContent = initialCount;
+          unreadMessagesCount.style.display = initialCount > 0 ? 'inline' : 'none';
+        }
+      })
+      .catch(error => {});
+
+    socket.on("newNotification", () => {
+      let currentCount = parseInt(unreadNotificationsCount.textContent) || 0;
+      currentCount++;
+      unreadNotificationsCount.textContent = currentCount;
+      unreadNotificationsCount.style.display = 'inline';
+    });
+
+    socket.on("newMessage", (message) => {
+      if (message.receiver_id === userId && !message.is_read) {
+        let currentCount = parseInt(unreadMessagesCount.textContent) || 0;
+        currentCount++;
+        unreadMessagesCount.textContent = currentCount;
+        unreadMessagesCount.style.display = 'inline';
+      }
+    });
+
+    notificationsIcon.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch('/notifications/mark-all-as-read', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+          unreadNotificationsCount.textContent = '0';
+          unreadNotificationsCount.style.display = 'none';
+        }
+        window.location.href = '/notifications';
+      } catch (error) {}
+    });
+
+    messagesIcon.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch('/chat/mark-all-as-read', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+          unreadMessagesCount.textContent = '0';
+          unreadMessagesCount.style.display = 'none';
+        }
+        window.location.href = '/messages';
+      } catch (error) {}
+    });
+
+    const logoutForm = document.getElementById('logout-form');
+    if (logoutForm) {
+      logoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch('/logout', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        });
+          if (response.ok) {
+            window.location.href = '/login';
+          }
+        } catch (error) {}
+      });
+    }
+  });
+</script>

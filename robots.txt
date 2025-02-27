@@ -1,0 +1,340 @@
+تحديث المسارات في Router
+
+const express = require('express');
+const router = express.Router();
+const JobController = require('../controllers/JobController');
+
+// صفحة إضافة وظيفة
+router.get('/add', (req, res) => {
+  res.render('addJob', { title: 'إضافة وظيفة' });
+});
+
+// صفحة عرض الوظائف
+router.get('/', JobController.getAllJobs);
+
+// صفحة طلبات التوظيف لصاحب الوظيفة
+router.get('/applications', JobController.getApplications);
+
+module.exports = router;
+
+إنشاء القوالب EJS
+1. صفحة إضافة وظيفة (views/addJob.ejs)
+
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <title>إضافة وظيفة</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <h1>إضافة وظيفة جديدة</h1>
+    <form id="jobForm" action="/jobs/add" method="POST" enctype="multipart/form-data">
+      <!-- هنا تضع حقول الوظيفة كما في النموذج السابق -->
+      <button type="submit">إضافة</button>
+    </form>
+    <script src="/js/addJob.js"></script>
+  </body>
+</html>
+
+2. صفحة عرض الوظائف (views/jobList.ejs)
+
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <title>عرض الوظائف</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <h1>عرض الوظائف</h1>
+    <div id="jobList">
+      <!-- الوظائف ستظهر هنا باستخدام JavaScript -->
+    </div>
+    <script src="/js/jobList.js"></script>
+  </body>
+</html>
+
+3. صفحة طلبات التوظيف (views/jobApplications.ejs)
+
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <title>طلبات التوظيف</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <h1>طلبات التوظيف</h1>
+    <div id="applicationList">
+      <!-- الطلبات ستظهر هنا باستخدام JavaScript -->
+    </div>
+    <script src="/js/jobApplications.js"></script>
+  </body>
+</html>
+
+تحديث ملفات JavaScript
+1. addJob.js: إرسال بيانات الوظيفة
+
+document.getElementById('jobForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  const formData = new FormData(this);
+
+  fetch('/jobPage/add', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('تمت إضافة الوظيفة بنجاح!');
+        window.location.href = '/jobs';
+      } else {
+        alert('حدث خطأ أثناء إضافة الوظيفة.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+});
+
+2. jobList.js: عرض الوظائف
+
+document.addEventListener('DOMContentLoaded', function () {
+  const jobList = document.getElementById('jobList');
+
+  fetch('/jobPage/all')
+    .then(response => response.json())
+    .then(data => {
+      if (data.jobs && data.jobs.length > 0) {
+        jobList.innerHTML = data.jobs.map(job => `
+          <div class="job-card">
+            <h3>${job.title}</h3>
+            <p>${job.description}</p>
+            <p>الموقع: ${job.location}</p>
+            <button onclick="applyForJob(${job.job_id})">تقديم</button>
+          </div>
+        `).join('');
+      } else {
+        jobList.innerHTML = '<p>لا توجد وظائف متاحة.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      jobList.innerHTML = '<p>حدث خطأ أثناء تحميل الوظائف.</p>';
+    });
+});
+
+function applyForJob(jobId) {
+  // قم بإضافة منطق تقديم الطلب هنا
+}
+
+3. jobApplications.js: عرض طلبات التوظيف
+
+document.addEventListener('DOMContentLoaded', function () {
+  const applicationList = document.getElementById('applicationList');
+
+  fetch('/jobPage/myapplications')
+    .then(response => response.json())
+    .then(data => {
+      if (data.applications && data.applications.length > 0) {
+        applicationList.innerHTML = data.applications.map(app => `
+          <div class="application-card">
+            <h3>وظيفة: ${app.job_title}</h3>
+            <p>تاريخ التقديم: ${new Date(app.date_applied).toLocaleDateString()}</p>
+            <p>حالة الطلب: ${app.status}</p>
+          </div>
+        `).join('');
+      } else {
+        applicationList.innerHTML = '<p>لا توجد طلبات حتى الآن.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      applicationList.innerHTML = '<p>حدث خطأ أثناء تحميل الطلبات.</p>';
+    });
+});
+
+تنظيم الملفات
+
+    المسارات (Routes):
+        routes/jobRouter.js
+    التحكم (Controllers):
+        controllers/JobController.js
+    القوالب (Views):
+        views/addJob.ejs
+        views/jobList.ejs
+        views/jobApplications.ejs
+
+إضافة تصميم أفضل
+
+استخدام مكتبة CSS مثل Bootstrap أو Tailwind لتحسين التصميم وتنسيق العناصر.
+خطوات إضافية؟
+
+إذا كنت بحاجة إلى المساعدة في أي جزء أو إضافة ميزات إضافية، سأكون سعيدًا بمساعدتك!
+You said:
+سمي الصفحات jobsadd و jobsshow و jobsapp
+ChatGPT said:
+ChatGPT
+
+لتعديل أسماء الصفحات إلى jobsadd، jobsshow، و jobsapp، يجب إجراء التعديلات التالية:
+1. تحديث المسارات في Router
+
+const express = require('express');
+const router = express.Router();
+const JobController = require('../controllers/JobController');
+
+// صفحة إضافة وظيفة
+router.get('/jobsadd', (req, res) => {
+  res.render('jobsadd', { title: 'إضافة وظيفة' });
+});
+
+// صفحة عرض الوظائف
+router.get('/jobsshow', JobController.getAllJobs);
+
+// صفحة طلبات التوظيف
+router.get('/jobsapp', JobController.getApplications);
+
+module.exports = router;
+
+2. إنشاء القوالب EJS
+صفحة إضافة وظيفة (views/jobsadd.ejs)
+
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <title>إضافة وظيفة</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <h1>إضافة وظيفة جديدة</h1>
+    <form id="jobForm" action="/jobs/add" method="POST" enctype="multipart/form-data">
+      <!-- الحقول كما كانت -->
+      <button type="submit">إضافة</button>
+    </form>
+    <script src="/js/addJob.js"></script>
+  </body>
+</html>
+
+صفحة عرض الوظائف (views/jobsshow.ejs)
+
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <title>عرض الوظائف</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <h1>عرض الوظائف</h1>
+    <div id="jobList"></div>
+    <script src="/js/jobList.js"></script>
+  </body>
+</html>
+
+صفحة طلبات التوظيف (views/jobsapp.ejs)
+
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <title>طلبات التوظيف</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <h1>طلبات التوظيف</h1>
+    <div id="applicationList"></div>
+    <script src="/js/jobApplications.js"></script>
+  </body>
+</html>
+
+3. تحديث ملفات JavaScript
+addJob.js (نفس السابق)
+
+document.getElementById('jobForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  const formData = new FormData(this);
+
+  fetch('/jobs/add', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('تمت إضافة الوظيفة بنجاح!');
+        window.location.href = '/jobsshow';
+      } else {
+        alert('حدث خطأ أثناء إضافة الوظيفة.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+});
+
+jobList.js (نفس السابق)
+
+document.addEventListener('DOMContentLoaded', function () {
+  const jobList = document.getElementById('jobList');
+
+  fetch('/jobPage/all')
+    .then(response => response.json())
+    .then(data => {
+      if (data.jobs && data.jobs.length > 0) {
+        jobList.innerHTML = data.jobs.map(job => `
+          <div class="job-card">
+            <h3>${job.title}</h3>
+            <p>${job.description}</p>
+            <p>الموقع: ${job.location}</p>
+            <button onclick="applyForJob(${job.job_id})">تقديم</button>
+          </div>
+        `).join('');
+      } else {
+        jobList.innerHTML = '<p>لا توجد وظائف متاحة.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      jobList.innerHTML = '<p>حدث خطأ أثناء تحميل الوظائف.</p>';
+    });
+});
+
+function applyForJob(jobId) {
+  // قم بإضافة منطق تقديم الطلب هنا
+}
+
+jobApplications.js (نفس السابق)
+
+document.addEventListener('DOMContentLoaded', function () {
+  const applicationList = document.getElementById('applicationList');
+
+  fetch('/jobPage/myapplications')
+    .then(response => response.json())
+    .then(data => {
+      if (data.applications && data.applications.length > 0) {
+        applicationList.innerHTML = data.applications.map(app => `
+          <div class="application-card">
+            <h3>وظيفة: ${app.job_title}</h3>
+            <p>تاريخ التقديم: ${new Date(app.date_applied).toLocaleDateString()}</p>
+            <p>حالة الطلب: ${app.status}</p>
+          </div>
+        `).join('');
+      } else {
+        applicationList.innerHTML = '<p>لا توجد طلبات حتى الآن.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      applicationList.innerHTML = '<p>حدث خطأ أثناء تحميل الطلبات.</p>';
+    });
+});
+
+4. إعادة توجيه بعد الإضافة
+
+عند نجاح إضافة وظيفة، يتم توجيه المستخدم إلى صفحة jobsshow لعرض الوظائف.
+هل تحتاج مزيدًا من التخصيص أو تحسين التنسيق؟
+
+
+ChatGPT can make mistakes. Check important info.

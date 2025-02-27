@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل معنا - Colorizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/contact.css">
+</head>
+<%- include('partials/headerhome') %>
+<%- include('partials/headeraction') %>
+<body>
+<body>
+   
+    
+    <header>
+        <div class="container">
+            <h1>تواصل معنا</h1>
+            <p>فريق Colorizer موجود لدعمك! سواء كنت بحاجة إلى مساعدة، لديك استفسار، أو تريد مشاركة اقتراح، نحن هنا لسماعك.</p>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="container">
+            <h2>طرق التواصل</h2>
+            <div class="contact-info">
+                <div class="info-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>البريد الإلكتروني</h3>
+                    <p>راسلنا على: <a href="mailto:support@colorizer.com">support@colorizer.com</a></p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-phone-alt"></i>
+                    <h3>رقم الهاتف</h3>
+                    <p>اتصل بنا: <a href="tel:+123456789">+123-456-789</a></p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>موقعنا</h3>
+                    <p>Colorizer HQ, شارع الإبداع، مدينة الإلهام</p>
+                </div>
+            </div>
+
+            <h2>أرسل رسالتك</h2>
+            <div class="contact-form">
+                <form id="contactForm">
+                    <input type="text" name="name" placeholder="اسمك" required>
+                    <input type="email" name="email" placeholder="بريدك الإلكتروني" required>
+                    <input type="text" name="subject" placeholder="الموضوع" required>
+                    <textarea name="message" placeholder="رسالتك" required></textarea>
+                    <button type="submit">إرسال الرسالة</button>
+                </form>
+                <div id="formMessage" style="margin-top: 15px; text-align: center; display: none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <div class="container">
+            <h2>انضم إلى عالم الإبداع!</h2>
+            <p>سجّل الآن وكن جزءًا من مجتمع Colorizer الملهم.</p>
+            <a href="/register">انضم الآن</a>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('/contact/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.style.display = 'block';
+
+                if (response.ok) {
+                    messageDiv.textContent = 'تم إرسال رسالتك بنجاح!';
+                    messageDiv.style.color = '#6B48FF';
+                    form.reset();
+                } else {
+                    messageDiv.textContent = result.message || 'حدث خطأ أثناء الإرسال، حاول مرة أخرى.';
+                    messageDiv.style.color = '#FF5C5C';
+                }
+            } catch (error) {
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = 'حدث خطأ في الاتصال، يرجى المحاولة لاحقًا.';
+                messageDiv.style.color = '#FF5C5C';
+                console.error('Fetch Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

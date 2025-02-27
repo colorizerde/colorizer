@@ -1,0 +1,210 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Cairo", sans-serif;
+}
+body {
+  background-color: #f9fbfc;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+}
+header {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6c5ce7;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+/* زر حذف كل الإشعارات */
+.delete-all-form {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.delete-all-btn {
+  padding: 10px 15px;
+  border-radius: 25px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.775rem;
+  transition: background-color 0.3s ease;
+}
+.delete-all-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Notification list */
+.notification-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 0px;
+}
+
+.notification-list li {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease-in-out;
+  animation: fadeIn 0.5s ease-in-out;
+  flex-wrap: wrap;
+  transition: all 0.3s ease-in-out;
+  animation: fadeIn 0.5s ease-in-out;
+  cursor: pointer;
+  border-left: 5px solid #6c5ce7;
+}
+
+.notification-list li:hover {
+  background-color: #eeebeb;
+  transition: 0.9s;
+  border-left: 5px solid #80b8e6;
+}
+.notification-list li.unread {
+  border-left: 5px solid #6c5ce7;
+}
+
+.notification-list li.viewed {
+  background-color: #f1f1f1;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.avatar {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.notification-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.notification-text strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.notification-text p {
+  color: #555;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.created-at {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.notification-image {
+  width: 200px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+  /* إضافة خصائص لتوسيط الصورة */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+}
+.notification-image:hover {
+  transform: scale(1.1);
+  transition: 0.9s;
+}
+.notification-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-btn {
+  padding: 5px 8px;
+  border-radius: 25px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.675rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .notification-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notification-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+
+  .notification-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .delete-btn {
+    width: 100%;
+  }
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

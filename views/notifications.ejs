@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/notifications.css" />
+  <title>الإشعارات</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+    .text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.5rem;
+      color: #3498db;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .delete-all-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .delete-all-btn:hover {
+      background: linear-gradient(135deg, #c0392b, #992d22);
+    }
+    .notification-list {
+      list-style: none;
+      padding: 0;
+    }
+    .notification-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: #f8f9fb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      transition: background 0.3s ease;
+    }
+    .notification-list li.unread {
+      background: #e8f0fe;
+      border-left: 4px solid #3498db;
+    }
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .notification-text strong {
+      font-size: 16px;
+      font-weight: 600;
+      color: #3498db;
+    }
+    .notification-text p {
+      font-size: 14px;
+      color: #2c3e50;
+      margin: 5px 0;
+    }
+    .created-at {
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+    .notification-image {
+      max-width: 100px;
+      border-radius: 8px;
+    }
+    .notification-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .notification-actions .delete-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #ffffff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .notification-actions .delete-btn:hover {
+      background: linear-gradient(135deg, #c0392b, #992d22);
+    }
+    .no-notifications {
+      text-align: center;
+      color: #636e72;
+      font-size: 16px;
+    }
+    .message-success {
+      color: #2ecc71;
+      text-align: center;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .message-error {
+      color: #e74c3c;
+      text-align: center;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <%- include('partials/headerhome') %>
+    <%- include('partials/headeraction') %>
+  </header>
+
+  <div class="container">
+    <text class="text">
+      <p>الإشعارات <% if (unreadCount > 0) { %><span style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px;"><%= unreadCount %></span><% } %></p>
+      <form action="/notifications/delete-all" method="POST" class="delete-all-form">
+        <button type="submit" class="delete-all-btn">
+          <i class="fas fa-trash"></i> حذف الكل
+        </button>
+      </form>
+    </text>
+
+    <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+      <p class="message-success"><%= successMessage %></p>
+    <% } %>
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <p class="message-error"><%= errorMessage %></p>
+    <% } %>
+
+    <ul class="notification-list" id="notification-list">
+      <% if (notifications.length === 0) { %>
+        <p class="no-notifications">لا توجد إشعارات لعرضها</p>
+      <% } else { %>
+        <% notifications.forEach(notification => { %>
+          <li class="notification-item <%= notification.viewed ? 'viewed' : 'unread' %>" data-id="<%= notification.id %>">
+            <div class="notification-content">
+              <img
+                src="<%= notification.sender_id === userId ? currentUserAvatar : (notification.sender_avatar || '/uploads/images/pngwing.com.png') %>"
+                class="avatar"
+                alt="<%= notification.sender_name || 'User' %>"
+                onerror="this.src='/uploads/images/pngwing.com.png'"
+              />
+              <div class="notification-text">
+                <strong><%= notification.sender_name || 'Admin' %></strong>
+                <p><%= notification.message %></p>
+                <span class="created-at">
+                  <%= new Date(notification.created_at).toLocaleString('ar-EG', { hour12: true }) %>
+                </span>
+              </div>
+              <% if (notification.image_url) { %>
+                <img
+                  src="<%= notification.image_url %>"
+                  class="notification-image"
+                  alt="Notification Image"
+                  onerror="this.style.display='none'"
+                />
+              <% } %>
+            </div>
+            <div class="notification-actions">
+              <form action="/notifications/delete/<%= notification.id %>" method="POST" class="delete-form">
+                <button type="submit" class="delete-btn">
+                  <i class="fas fa-trash"></i> حذف
+                </button>
+              </form>
+            </div>
+          </li>
+        <% }) %>
+      <% } %>
+    </ul>
+  </div>
+
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const userId = "<%= userId %>";
+    const currentUserAvatar = "<%= currentUserAvatar %>";
+
+    socket.emit("join", userId);
+
+    // إشعار وظيفة جديدة
+    socket.on("newJobNotification", ({ senderId, message, jobId }) => {
+      addNotification(senderId, message, jobId, null, true);
+    });
+
+    // إشعار تقديم طلب وظيفة
+    socket.on("jobApplicationReceived", ({ applicantId, jobId, message }) => {
+      addNotification(applicantId, message, `${jobId}-${applicantId}`, null, true);
+    });
+
+    // إشعار طلب صداقة
+    socket.on("friendRequestReceived", ({ senderId }) => {
+      fetch(`/friends/friend-request/${senderId}`)
+        .then(response => response.json())
+        .then(request => {
+          const message = `${request.sender_name} أرسل لك طلب صداقة`;
+          addNotification(senderId, message, request.id, request.sender_avatar, true);
+        });
+    });
+
+    function addNotification(senderId, message, notificationId, imageUrl = null, isNew = false) {
+      const notificationList = document.getElementById("notification-list");
+      const noNotifications = document.querySelector(".no-notifications");
+      if (noNotifications) noNotifications.remove();
+
+      const li = document.createElement("li");
+      li.className = `notification-item ${isNew ? 'unread' : 'viewed'}`;
+      li.dataset.id = notificationId;
+      li.innerHTML = `
+        <div class="notification-content">
+          <img
+            src="${senderId === userId ? currentUserAvatar : (imageUrl || '/uploads/images/pngwing.com.png')}"
+            class="avatar"
+            alt="User"
+            onerror="this.src='/uploads/images/pngwing.com.png'"
+          />
+          <div class="notification-text">
+            <strong>${senderId === userId ? 'أنت' : 'Admin'}</strong>
+            <p>${message}</p>
+            <span class="created-at">${new Date().toLocaleString('ar-EG', { hour12: true })}</span>
+          </div>
+          ${imageUrl ? `<img src="${imageUrl}" class="notification-image" alt="Notification Image" onerror="this.style.display='none'"/>` : ''}
+        </div>
+        <div class="notification-actions">
+          <form action="/notifications/delete/${notificationId}" method="POST" class="delete-form">
+            <button type="submit" class="delete-btn">
+              <i class="fas fa-trash"></i> حذف
+            </button>
+          </form>
+        </div>
+      `;
+      notificationList.prepend(li);
+
+      if (isNew) {
+        const unreadCountElement = document.querySelector(".text span");
+        let unreadCount = parseInt(unreadCountElement?.textContent) || 0;
+        if (unreadCountElement) {
+          unreadCountElement.textContent = unreadCount + 1;
+        } else {
+          document.querySelector(".text p").innerHTML += ` <span style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px;">1</span>`;
+        }
+      }
+    }
+
+    // معالجة حذف الإشعار
+    document.querySelectorAll(".delete-form").forEach(form => {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const notificationId = form.action.split('/').pop();
+        try {
+          const response = await fetch(`/notifications/delete/${notificationId}`, { method: "POST" });
+          if (response.ok) {
+            const li = document.querySelector(`li[data-id="${notificationId}"]`);
+            if (li) li.remove();
+
+            const unreadCountElement = document.querySelector(".text span");
+            if (unreadCountElement) {
+              let unreadCount = parseInt(unreadCountElement.textContent) || 0;
+              if (unreadCount > 1) {
+                unreadCountElement.textContent = unreadCount - 1;
+              } else {
+                unreadCountElement.remove();
+              }
+            }
+          } else {
+            throw new Error("فشل في حذف الإشعار");
+          }
+        } catch (err) {
+          console.error("Error deleting notification:", err);
+          const errorDiv = document.createElement("p");
+          errorDiv.className = "message-error";
+          errorDiv.textContent = "حدث خطأ أثناء حذف الإشعار.";
+          document.querySelector(".container").prepend(errorDiv);
+          setTimeout(() => errorDiv.remove(), 3000);
+        }
+      });
+    });
+  </script>
+</body>
+<footer style="margin-top: 60vh">
+  <%- include('partials/footer') %>
+</footer>
+
+</html>

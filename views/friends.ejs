@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>صفحة الأصدقاء</title>
+  <link rel="stylesheet" href="/css/friends.css" />
+</head>
+<body>
+  <%- include('partials/headerhome') %>
+  <%- include('partials/headeraction') %>
+
+  <!-- عرض رسائل النجاح أو الخطأ -->
+  <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+    <p class="message-success"><%= successMessage %></p>
+  <% } %>
+  <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+    <p class="message-error"><%= errorMessage %></p>
+  <% } %>
+
+  <div class="all">
+    <!-- البحث عن صديق -->
+    <div class="right">
+      <text class="text">البحث عن صديق</text>
+      <section>
+        <div class="search">
+          <form action="/friends/search" method="get">
+            <input type="text" name="q" placeholder="ابحث عن صديق..." required />
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </form>
+        </div>
+        <% if (typeof searchResults !== 'undefined' && searchResults && searchResults.length > 0) { %>
+          <h2>نتائج البحث</h2>
+          <ul class="ul">
+            <% searchResults.forEach(function(result) { %>
+              <li class="li">
+                <div class="friend-info">
+                  <img src="<%= result.avatar %>" 
+                       alt="صورة المستخدم" 
+                       onerror="this.src='/uploads/images/pngwing.com.png'" />
+                  <span><%= result.name %></span>
+                </div>
+                <% if (result.friendship_status === 'not_friend') { %>
+                  <form action="/friends/send-request" method="post">
+                    <input type="hidden" name="friendId" value="<%= result.id %>" />
+                    <button type="submit">إضافة</button>
+                  </form>
+                <% } else if (result.friendship_status === 'request_sent') { %>
+                  <span class="status pending">طلب مرسل</span>
+                <% } else if (result.friendship_status === 'friend') { %>
+                  <span class="status friend">صديق</span>
+                <% } else if (result.friendship_status === 'blocked') { %>
+                  <span class="status blocked">محظور</span>
+                <% } %>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else if (typeof searchResults !== 'undefined' && searchResults && searchResults.length === 0) { %>
+          <p class="no-results">لا توجد نتائج مطابقة</p>
+        <% } %>
+      </section>
+
+      <!-- الأصدقاء المحظورين -->
+      <text class="text">الأصدقاء المحظورين</text>
+      <section>
+        <% if (!blockedFriends || blockedFriends.length === 0) { %>
+          <p class="no-results">لا يوجد أصدقاء محظورين</p>
+        <% } else { %>
+          <ul class="ul" id="blocked-friends-list">
+            <% blockedFriends.forEach(function(blocked) { %>
+              <li class="li" data-id="<%= blocked.id %>">
+                <div class="friend-info">
+                  <img src="<%= blocked.avatar %>" 
+                       alt="صورة المحظور" 
+                       onerror="this.src='/uploads/images/pngwing.com.png'" />
+                  <span><%= blocked.name %></span>
+                </div>
+                <form action="/friends/unblock/<%= blocked.id %>" method="post">
+                  <button type="submit">إلغاء الحظر</button>
+                </form>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </section>
+    </div>
+
+    <!-- الأصدقاء في الوسط -->
+    <div class="center">
+      <section>
+        <text class="text">أصدقاؤك <span id="friends-count">(<%= friends ? friends.length : 0 %>)</span></text>
+        <% if (!friends || friends.length === 0) { %>
+          <p class="no-results">لا يوجد أصدقاء حاليًا</p>
+        <% } else { %>
+          <ul class="ul" id="friends-list">
+            <% friends.forEach(function(friend) { %>
+              <li class="li" data-id="<%= friend.id %>">
+                <div class="friend-info">
+                  <img src="<%= friend.avatar %>" 
+                       alt="صورة الصديق" 
+                       onerror="this.src='/uploads/images/pngwing.com.png'" />
+                  <span><%= friend.name %></span>
+                  <span class="<%= friend.online ? 'online' : 'offline' %>"><%= friend.online ? 'متصل' : 'غير متصل' %></span>
+                </div>
+                <div class="friend-actions">
+                  <a href="/friends/profile/<%= friend.id %>" class="action-icon" title="عرض الملف الشخصي"><i class="fas fa-user"></i></a>
+                  <a href="/chat/<%= friend.id %>" class="action-icon" title="الدردشة"><i class="fas fa-comment"></i></a>
+                  <form action="/friends/block/<%= friend.id %>" method="post" style="display: inline;">
+                    <button type="submit" class="action-icon" title="حظر"><i class="fas fa-ban"></i></button>
+                  </form>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </section>
+    </div>
+
+    <!-- طلبات الصداقة -->
+    <div class="left">
+      <text class="text">طلبات الصداقة <% if (unreadCount > 0) { %><span class="unread-count"><%= unreadCount %></span><% } %></text>
+      <section>
+        <% if (!friendRequests || friendRequests.length === 0) { %>
+          <p class="no-results">لا توجد طلبات صداقة جديدة</p>
+        <% } else { %>
+          <ul class="ul" id="friend-requests-list">
+            <% friendRequests.forEach(function(request) { %>
+              <li class="li" data-id="<%= request.id %>">
+                <div class="friend-info">
+                  <img src="<%= request.sender_avatar %>" 
+                       alt="صورة مرسل الطلب" 
+                       onerror="this.src='/uploads/images/pngwing.com.png'" />
+                  <span><%= request.sender_name %></span>
+                </div>
+                <div class="friend-actions">
+                  <form action="/friends/accept-request/<%= request.id %>" method="post">
+                    <button type="submit" class="action-button accept">قبول</button>
+                  </form>
+                  <form action="/friends/reject-request/<%= request.id %>" method="post">
+                    <button type="submit" class="action-button reject">رفض</button>
+                  </form>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </section>
+      <text class="text">اقتراحات الأصدقاء</text>
+      <section>
+        <% if (!users || users.length === 0) { %>
+          <p class="no-results">لا توجد اقتراحات حاليًا</p>
+        <% } else { %>
+          <ul class="ul" id="suggested-friends-list">
+            <% users.forEach(function(user) { %>
+              <li class="li" data-id="<%= user.id %>">
+                <div class="friend-info">
+                  <img src="<%= user.avatar %>" 
+                       alt="صورة المستخدم" 
+                       onerror="this.src='/uploads/images/pngwing.com.png'" />
+                  <span><%= user.name %></span>
+                </div>
+                <div class="suggestion-details">
+                  <span><%= user.country || 'غير محدد' %></span>
+                  <span>العمر: <%= user.age || 'غير محدد' %></span>
+                  <span><%= user.language || 'غير محدد' %></span>
+                </div>
+                <form action="/friends/send-request" method="post">
+                  <input type="hidden" name="friendId" value="<%= user.id %>" />
+                  <button type="submit">إضافة</button>
+                </form>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </section>
+    </div>
+  </div>
+
+  <footer><%- include('partials/footer') %></footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const userId = "<%= locals.userId || '' %>";
+
+    socket.emit("join", userId);
+
+    socket.on("friendRequestReceived", ({ senderId, senderName }) => {
+      fetch(`/friends/friend-request/${senderId}`)
+        .then(response => response.json())
+        .then(request => {
+          const requestList = document.getElementById("friend-requests-list");
+          const li = document.createElement("li");
+          li.className = "li";
+          li.dataset.id = request.id;
+          li.innerHTML = `
+            <div class="friend-info">
+              <img src="${request.sender_avatar}" 
+                   alt="صورة مرسل الطلب" 
+                   onerror="this.src='/uploads/images/pngwing.com.png'" />
+              <span>${request.sender_name}</span>
+            </div>
+            <div class="friend-actions">
+              <form action="/friends/accept-request/${request.id}" method="post">
+                <button type="submit" class="action-button accept">قبول</button>
+              </form>
+              <form action="/friends/reject-request/${request.id}" method="post">
+                <button type="submit" class="action-button reject">رفض</button>
+              </form>
+            </div>
+          `;
+          requestList.prepend(li);
+
+          const unreadCountElement = document.querySelector(".unread-count");
+          let unreadCount = parseInt(unreadCountElement?.textContent) || 0;
+          if (unreadCountElement) {
+            unreadCountElement.textContent = unreadCount + 1;
+          } else {
+            const textElement = document.querySelector(".left .text");
+            textElement.innerHTML += ` <span class="unread-count">1</span>`;
+          }
+        });
+    });
+
+    socket.on("friendRequestAccepted", ({ receiverId }) => {
+      fetch(`/friends/friend/${receiverId}`)
+        .then(response => response.json())
+        .then(friend => {
+          const friendsList = document.getElementById("friends-list");
+          const li = document.createElement("li");
+          li.className = "li";
+          li.dataset.id = friend.id;
+          li.innerHTML = `
+            <div class="friend-info">
+              <img src="${friend.avatar}" 
+                   alt="صورة الصديق" 
+                   onerror="this.src='/uploads/images/pngwing.com.png'" />
+              <span>${friend.name}</span>
+              <span class="${friend.online ? 'online' : 'offline'}">${friend.online ? 'متصل' : 'غير متصل'}</span>
+            </div>
+            <div class="friend-actions">
+              <a href="/friends/profile/${friend.id}" class="action-icon" title="عرض الملف الشخصي"><i class="fas fa-user"></i></a>
+              <a href="/chat/${friend.id}" class="action-icon" title="الدردشة"><i class="fas fa-comment"></i></a>
+              <form action="/friends/block/${friend.id}" method="post" style="display: inline;">
+                <button type="submit" class="action-icon" title="حظر"><i class="fas fa-ban"></i></button>
+              </form>
+            </div>
+          `;
+          friendsList.prepend(li);
+
+          const friendsCountElement = document.getElementById("friends-count");
+          const currentCount = parseInt(friendsCountElement.textContent.match(/\d+/)[0]) || 0;
+          friendsCountElement.textContent = `(${currentCount + 1})`;
+        });
+    });
+
+    socket.on("friendRequestCanceled", ({ senderId }) => {
+      const requestElement = document.querySelector(`#friend-requests-list li[data-id="${senderId}"]`);
+      if (requestElement) requestElement.remove();
+
+      const unreadCountElement = document.querySelector(".unread-count");
+      let unreadCount = parseInt(unreadCountElement?.textContent) || 0;
+      if (unreadCount > 0) {
+        unreadCountElement.textContent = unreadCount - 1;
+        if (unreadCount - 1 === 0) unreadCountElement.remove();
+      }
+    });
+
+    socket.on("friendBlocked", ({ friendId }) => {
+      const friendElement = document.querySelector(`#friends-list li[data-id="${friendId}"]`);
+      if (friendElement) friendElement.remove();
+
+      const blockedList = document.getElementById("blocked-friends-list");
+      fetch(`/friends/blocked/${friendId}`)
+        .then(response => response.json())
+        .then(blocked => {
+          const li = document.createElement("li");
+          li.className = "li";
+          li.dataset.id = blocked.id;
+          li.innerHTML = `
+            <div class="friend-info">
+              <img src="${blocked.avatar}" 
+                   alt="صورة المحظور" 
+                   onerror="this.src='/uploads/images/pngwing.com.png'" />
+              <span>${blocked.name}</span>
+            </div>
+            <form action="/friends/unblock/${blocked.id}" method="post">
+              <button type="submit">إلغاء الحظر</button>
+            </form>
+          `;
+          blockedList.prepend(li);
+        });
+
+      const friendsCountElement = document.getElementById("friends-count");
+      const currentCount = parseInt(friendsCountElement.textContent.match(/\d+/)[0]) || 0;
+      friendsCountElement.textContent = `(${currentCount - 1})`;
+    });
+
+    socket.on("friendUnblocked", ({ friendId }) => {
+      const blockedElement = document.querySelector(`#blocked-friends-list li[data-id="${friendId}"]`);
+      if (blockedElement) blockedElement.remove();
+    });
+  </script>
+</body>
+</html>

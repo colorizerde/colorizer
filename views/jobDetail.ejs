@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تفاصيل الوظيفة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Cairo", sans-serif;
+    }
+
+    html {
+      direction: ltr;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 0px;
+    }
+
+    .container {
+      direction: rtl;
+      max-width: 800px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #007bff;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    .job-detail {
+      text-align: right;
+      font-size: 18px;
+      color: #333;
+      line-height: 1.8;
+    }
+
+    .job-detail p {
+      margin: 15px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #e0e0e0;
+    }
+
+    .job-detail p:last-child {
+      border-bottom: none;
+    }
+
+    .job-detail strong {
+      color: #007bff;
+    }
+
+    .back-btn, .join-btn {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .back-btn {
+      background: #007bff;
+      margin-right: 10px;
+    }
+
+    .back-btn:hover {
+      background: #0056b3;
+    }
+
+    .join-btn {
+      background: #28a745;
+      border: none;
+      cursor: pointer;
+    }
+
+    .join-btn:hover {
+      background: #218838;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+
+    .modal-backdrop.active {
+      display: block;
+    }
+
+    .hidden-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      z-index: 200;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .hidden-form.active {
+      display: block;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .hidden-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1em;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .hidden-form button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .hidden-form button[type="submit"]:hover {
+      background: #218838;
+    }
+
+    .login-prompt {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #777;
+    }
+
+    .messages {
+      margin-bottom: 20px;
+    }
+
+    .success-message {
+      color: #28a745;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .error-message {
+      color: #dc3545;
+      text-align: center;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/headerhome') %>
+  <%- include('partials/headeraction') %>
+  <div class="container">
+    <!-- عرض رسائل النجاح أو الخطأ -->
+    <div class="messages">
+      <% if (successMessage) { %>
+        <p class="success-message"><%= successMessage %></p>
+      <% } %>
+      <% if (errorMessage) { %>
+        <p class="error-message"><%= errorMessage %></p>
+      <% } %>
+    </div>
+
+    <h1>
+      <i class="fas fa-briefcase"></i>
+      <%= job.title %>
+    </h1>
+    <div class="job-detail">
+      <p><strong>الوصف:</strong> <%= job.description %></p>
+      <p><strong>نوع العمل:</strong> <%= job.job_type %></p>
+      <p><strong>المؤهل المطلوب:</strong> <%= job.education %></p>
+      <p><strong>الموقع:</strong> <%= job.location %></p>
+      <p>
+        <strong>الراتب:</strong>
+        <% if (job.salary_after_interview) { %>
+          الراتب بعد المقابلة
+        <% } else if (job.salary_min && job.salary_max) { %>
+          <%= job.salary_min + " - " + job.salary_max + " " + job.currency %>
+        <% } else { %>
+          غير محدد
+        <% } %>
+      </p>
+      <p>
+        <strong>تاريخ الإعلان:</strong>
+        <%= new Date(job.created_at).toLocaleDateString() %>
+      </p>
+      <p>
+        <strong>مدة الإعلان:</strong>
+        <%= job.duration ? job.duration + " يوم" : "غير محدد" %>
+      </p>
+    </div>
+    <a href="/listing-job" class="back-btn">
+      <i class="fas fa-arrow-right"></i> العودة للوظائف
+    </a>
+    <% if (currentUserId) { %>
+      <button class="join-btn" onclick="openModal('<%= job.job_id %>')">
+        <i class="fas fa-user-plus"></i> الانضمام للوظيفة
+      </button>
+    <% } else { %>
+      <p class="login-prompt">يرجى تسجيل الدخول للتقديم على الوظيفة.</p>
+    <% } %>
+  </div>
+
+  <div id="modal-backdrop" class="modal-backdrop"></div>
+
+  <% if (currentUserId) { %>
+    <div id="modal-<%= job.job_id %>" class="hidden-form">
+      <button class="close-modal" onclick="closeModal('<%= job.job_id %>')">
+        ×
+      </button>
+      <form action="/apply-job" method="post">
+        <input type="hidden" name="job_id" value="<%= job.job_id %>" />
+        <textarea name="cover_letter" placeholder="رسالة التقديم" required></textarea>
+        <button type="submit">إرسال الطلب</button>
+      </form>
+    </div>
+  <% } %>
+
+  <footer style="margin-top: 14vh"><%- include('partials/footer') %></footer>
+
+  <script>
+    function openModal(jobId) {
+      const modal = document.getElementById(`modal-${jobId}`);
+      if (modal) {
+        modal.classList.add("active");
+        document.getElementById("modal-backdrop").classList.add("active");
+      }
+    }
+
+    function closeModal(jobId) {
+      const modal = document.getElementById(`modal-${jobId}`);
+      if (modal) {
+        modal.classList.remove("active");
+        document.getElementById("modal-backdrop").classList.remove("active");
+      }
+    }
+  </script>
+</body>
+</html>

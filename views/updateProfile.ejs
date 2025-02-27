@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تعديل المعلومات</title>
+  <link rel="stylesheet" href="/css/updateProfile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <%- include('partials/headerhome') %>
+  <%- include('partials/headeraction') %>
+
+  <form action="/updateProfile" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="name">الاسم:</label>
+      <input type="text" name="name" id="name" value="<%= user.name %>" required>
+    </div>
+  
+    <div class="form-group">
+      <label for="avatar">صورة البروفايل:</label>
+      <input type="file" name="avatar" id="avatar" accept="image/*">
+      <% if (user.avatar) { %>
+        <img src="/uploads/avatars/<%= user.avatar %>" alt="Current Avatar">
+      <% } %>
+    </div>
+  
+    <div class="form-group">
+      <label for="age">العمر:</label>
+      <input type="number" name="age" id="age" value="<%= user.age || '' %>">
+    </div>
+  
+    <div class="form-group">
+      <label for="gender">الجنس:</label>
+      <select name="gender" id="gender">
+        <option value="male" <% if (user.gender === 'male') { %>selected<% } %>>ذكر</option>
+        <option value="female" <% if (user.gender === 'female') { %>selected<% } %>>أنثى</option>
+      </select>
+    </div>
+  
+    <div class="form-group">
+      <label for="country">البلد:</label>
+      <input type="text" name="country" id="country" value="<%= user.country || '' %>">
+    </div>
+  
+    <div class="form-group">
+      <label for="language">اللغة:</label>
+      <input type="text" name="language" id="language" value="<%= user.language || '' %>">
+    </div>
+  
+    <div class="form-group">
+      <label for="occupation">المهنة:</label>
+      <input type="text" name="occupation" id="occupation" value="<%= user.occupation || '' %>">
+    </div>
+  
+    <div class="form-group">
+      <label for="phone">الهاتف:</label>
+      <input type="text" name="phone" id="phone" value="<%= user.phone || '' %>">
+    </div>
+  
+    <button type="submit">تحديث الملف الشخصي</button>
+  </form>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

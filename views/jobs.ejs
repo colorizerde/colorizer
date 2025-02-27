@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>بوابة الوظائف الحديثة</title>
+    <!-- استخدام خط "Cairo" لدعم المحتوى العربي -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #6c5ce7; /* بنفسجي */
+        --secondary-color: #6c5ce7; /* بنفسجي داكن */
+        --accent-color: #6c5ce7; /* بنفسجي فاتح */
+        --background-color: #f8f8f8;
+        --card-bg: #fff;
+        --text-color: #6c5ce7;
+        --border-radius: 16px;
+        --transition: 0.4s ease;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+
+      /* إعدادات عامة */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Cairo", sans-serif;
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.8;
+      }
+
+      h1, h2, h3 {
+        color: var(--primary-color);
+      }
+
+      /* الحاوية الرئيسية */
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* تصميم البطاقات */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: transform var(--transition), box-shadow var(--transition);
+        text-align: center;
+        position: relative;
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        opacity: 0;
+        transition: opacity var(--transition);
+        z-index: 1;
+      }
+
+      .card:hover::before {
+        opacity: 0.1;
+      }
+
+      .card img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        margin: 2rem auto 1rem;
+        transition: transform var(--transition);
+      }
+
+      .card:hover img {
+        transform: scale(1.1);
+      }
+
+      .card h2 {
+        color: var(--primary-color);
+        font-size: 1.75rem;
+        margin: 1rem 0;
+      }
+
+      .card p {
+        padding: 0 1.5rem 1.5rem;
+        font-size: 1rem;
+        color: var(--text-color);
+        line-height: 1.8;
+        color:black;
+      }
+      .card a {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        margin: 1rem 0 2rem;
+        transition: background-color var(--transition), transform var(--transition);
+        position: relative;
+        z-index: 2; /* تأكد من أن الزر فوق العناصر الأخرى */
+      }
+
+      .card a:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-3px);
+      }
+
+      /* استجابة التصميم */
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- تضمين الهيدر الجزئي -->
+    <%- include('partials/headerhome') %> <%- include('partials/headeraction') %>
+
+    <div class="container">
+      <!-- بطاقة عرض الوظائف -->
+      <div class="card">
+        <img src="\icons\pngwing.com(6).png" alt="عرض الوظائف" />
+        <h2>عرض الوظائف</h2>
+        <p>استكشف أحدث الفرص الوظيفية وابحث عن وظيفتك المثالية.</p>
+        <a href="/listing-job">اذهب إلى الوظائف</a>
+      </div>
+
+      <!-- بطاقة إضافة وظيفة -->
+      <div class="card">
+        <img src="\icons\pngwing.com(4).png" alt="إضافة وظيفة" />
+        <h2>إضافة وظيفة</h2>
+        <p>قم بنشر إعلان وظيفي جديد لجذب أفضل المواهب لشركتك.</p>
+        <a href="/add-job">إضافة وظيفة</a>
+      </div>
+
+      <!-- بطاقة طلبات التوظيف -->
+      <div class="card">
+        <img src="\icons\pngwing.com(5).png" alt="طلبات التوظيف" />
+        <h2>طلبات التوظيف</h2>
+        <p>قم بمراجعة الطلبات المقدمة من المرشحين المحتملين.</p>
+        <a href="/jobapplications">عرض الطلبات</a>
+      </div>
+    </div>
+
+    <footer style="margin-top: 14vh"><%- include('partials/footer') %></footer>
+  </body>
+</html>
