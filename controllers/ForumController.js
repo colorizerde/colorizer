@@ -1,4 +1,4 @@
-const forumModel = require("../models/ForumModel");
+const forumModel = require("../models/forumModel");
 const JobModel = require("../models/JobModel");
 const ProjectModel = require("../models/Project");
 const NotificationModel = require("../models/NotificationModel");
